@@ -1,13 +1,15 @@
 {
   "name": "@orbitalhq/orbital-client",
   "version": "0.1.0-alpha.0",
-  "description": "A library to execute TaxiQL queries against the Orbital query server",
+  "description": "A library to execute TaxiQL queries against an Orbital query server",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "repository": "https://github.com/orbital-api/typescript-client",
   "license": "MIT",
-  "keywords": [],
+  "keywords": [
+    "orbital"
+  ],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "cp -r bin/ build/bin && tsc -p tsconfig.json",
@@ -42,11 +44,15 @@
     "node": ">=10"
   },
   "dependencies": {
+  },
+  "peerDependencies": {
     "axios": "^0.27.2",
     "nanoid": "^3.3.4",
-    "rxjs": "^7.5.5"
+    "rxjs": "^7.x",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "reflect-metadata": "^0.1.13",
     "@ava/typescript": "^3.0.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
@@ -76,7 +82,7 @@
     "!**/*.json",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md",
+    "../README.md",
     "bin/orbital-generate.js"
   ],
   "ava": {
