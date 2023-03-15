@@ -7,14 +7,11 @@ export interface Logger {
 }
 
 export const noopLogger: Logger = {
-  error: () => {
-  },
+  error: () => {},
 
-  info: () => {
-  },
+  info: () => {},
 
-  warn: () => {
-  },
+  warn: () => {},
 };
 
 export const consoleLogger: Logger = {
