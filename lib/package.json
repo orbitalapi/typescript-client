@@ -1,6 +1,6 @@
 {
   "name": "@orbitalhq/orbital-client",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.2",
   "description": "A library to execute TaxiQL queries against an Orbital query server",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -36,8 +36,7 @@
   "engines": {
     "node": ">=10"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "axios": "^0.27.2",
     "nanoid": "^3.3.4",
