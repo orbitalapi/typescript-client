@@ -87,7 +87,9 @@ export function buildClient<TaxonomyMapping extends DatatypeMapping, Taxonomy ex
       return '';
     }
     const givenBlock = Object.entries(criteriaParams)
+      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       .map(([key, value]) => [getDatatype(key), value!.value])
+      /* eslint-enable @typescript-eslint/no-non-null-assertion */
       .map(([key, value]) => {
         if (typeof value !== 'function') {
           return `\t${generateCriteriaString(key, { operator: '=', value })}`;

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { catchError, from, map, Observable, of, zip } from 'rxjs';
 import { nanoid } from 'nanoid';
+import { catchError, from, map, Observable, of, zip } from 'rxjs';
 
 export interface QueryClient {
   query<T>(query: string, clientQueryId: string): Observable<T>;
