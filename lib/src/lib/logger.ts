@@ -1,4 +1,4 @@
-/* eslint @typescript-eslint/no-empty-function: "off", functional/no-return-void: "off" */
+/* eslint @typescript-eslint/no-empty-function: "off" */
 
 export interface Logger {
   readonly error: (message: string) => void;
@@ -7,14 +7,11 @@ export interface Logger {
 }
 
 export const noopLogger: Logger = {
-  error: () => {
-  },
+  error: () => {},
 
-  info: () => {
-  },
+  info: () => {},
 
-  warn: () => {
-  },
+  warn: () => {},
 };
 
 export const consoleLogger: Logger = {

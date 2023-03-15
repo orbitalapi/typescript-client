@@ -14,15 +14,13 @@
   ],
   "plugins": [
     "import",
-    "eslint-comments",
-    "functional"
+    "eslint-comments"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:eslint-comments/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/typescript",
-    "plugin:functional/lite",
     "prettier"
   ],
   "globals": {
@@ -32,6 +30,7 @@
   },
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "eslint-comments/disable-enable-pair": [
       "error",
       {
@@ -54,13 +53,6 @@
         "ignoreDeclarationSort": true,
         "ignoreCase": true
       }
-    ],
-    "functional/no-class": "off",
-    "functional/no-return-void": "warn",
-    "functional/no-this-expression": "warn",
-    "functional/no-throw-statement": "off",
-    "functional/no-mixed-type": "off",
-    "functional/prefer-readonly-type": "off",
-    "functional/functional-parameters": "off"
+    ]
   }
 }
