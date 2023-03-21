@@ -5,14 +5,15 @@
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/orbital-api/typescript-client",
+  "homepage": "https://orbitalhq.com",
+  "repository": "https://github.com/orbitalapi/typescript-client",
   "license": "MIT",
   "keywords": [
     "orbital"
   ],
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "mkdir -p build && cp -r bin/ build/bin && tsc -p tsconfig.json",
+    "build:main": "mkdir build && cp -r bin/ build/bin && tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",

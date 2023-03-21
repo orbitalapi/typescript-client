@@ -30,7 +30,7 @@ export interface DatatypeContainer<Value> {
 
 export type AnyDatatypeContainer = DatatypeContainer<any>;
 
-type DatatypeMapping = { [key: string]: DatatypeContainer<any> };
+export type DatatypeMapping = { [key: string]: DatatypeContainer<any> };
 
 export type TaxonomyType<Mapping extends DatatypeMapping> = {
   [key in keyof Mapping]: DatatypeContainer<Mapping[key]['value']>;
@@ -55,7 +55,7 @@ type QueryMethod = keyof QueryClient;
 export function buildClient<
   TaxonomyMapping extends DatatypeMapping,
   Taxonomy extends TaxonomyType<TaxonomyMapping>
->(taxonomy: Taxonomy, queryClient: QueryClient, options: ClientOptions) {
+>(taxonomy: Taxonomy, queryClient: QueryClient, options: ClientOptions = {}) {
   const actualOptions = { ...defaultOptions, ...options };
 
   type ComposingCriteriaBuilderFn<T extends AnyDatatypeContainer> = (
