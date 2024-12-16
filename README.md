@@ -15,7 +15,7 @@ content:
 
 ```json
 {
-  "schemaServerUrl": "<SCHEMA_SERVER_URL>"
+  "orbitalServerUrl": "<SCHEMA_SERVER_URL>"
 }
 ```
 

@@ -1,4 +1,4 @@
-import { asArray, buildClient, consoleLogger, HttpQueryClient } from 'orbital-client';
+import { asArray, buildClient, consoleLogger, HttpQueryClient } from '@orbitalhq/orbital-client';
 import { taxonomy } from './taxonomy';
 
 const client = buildClient<{}, typeof taxonomy>(
