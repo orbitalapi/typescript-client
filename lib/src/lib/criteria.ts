@@ -70,7 +70,8 @@ export function generateCriteriaString(
   criteriaElement: CriteriaElement
 ): string {
   if (isSingleValueCriteriaPredicate(criteriaElement)) {
-    return `${datatype} ${criteriaElement.operator} "${criteriaElement.value}"`;
+    const criteriaValue = typeof criteriaElement.value === 'number' ? criteriaElement.value : `"${criteriaElement.value}"`
+    return `${datatype} ${criteriaElement.operator} ${criteriaValue}`;
   } else if (isMultiValueCriteriaPredicate(criteriaElement)) {
     return `${datatype} ${
       criteriaElement.operator

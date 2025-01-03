@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "mkdir build && cp -r bin/ build/bin && tsc -p tsconfig.json",
+    "build:main": "shx mkdir -p build/bin && shx cp -r bin/ build/bin && tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
@@ -62,6 +62,7 @@
     "open-cli": "^8.0.0",
     "prettier": "^3.4.2",
     "reflect-metadata": "^0.2.2",
+    "shx": "^0.3.4",
     "standard-version": "^9.5.0",
     "ts-node": "^10.9.2",
     "typedoc": "^0.27.4",

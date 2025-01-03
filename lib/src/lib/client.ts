@@ -1,6 +1,12 @@
 import 'reflect-metadata'; // TODO Does this belong here or to the consumer code?
 import { nanoid } from 'nanoid';
-import { Observable } from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
+
+// export for consumers of this library
+export {
+  Subscription
+}
+
 
 import {
   ComposingCriteriaBuilder,
@@ -9,7 +15,7 @@ import {
   generateCriteriaString,
 } from './criteria';
 import { Logger, noopLogger } from './logger';
-import { QueryClient } from './query-client';
+import {EventSourceResponse, QueryClient} from './query-client';
 
 function isArray(input: any): input is any[] {
   return Array.isArray(input);
@@ -50,7 +56,8 @@ const defaultOptions: Required<ClientOptions> = {
 
 type FindParam<T, M extends DatatypeContainer<T>> = M | [M];
 
-type QueryMethod = keyof QueryClient;
+type TransportMethod = keyof QueryClient;
+type TaxiQueryMethod = 'find' | 'stream';
 
 export function buildClient<
   TaxonomyMapping extends DatatypeMapping,
@@ -79,10 +86,28 @@ export function buildClient<
     [field in keyof AsParams<Mapping>]: AsParams<Mapping>[field]['value'];
   };
 
-  type ReturnType<ResultType> = {
-    execute: () => Observable<ResultType>;
+  type ExecutionMethods<ResultType> = {
+    execute: () => Observable<ResultType | { error: any }>;
+    executeAsPromise: () => Promise<ResultType | { error: any }>;
+    executeAsEventStream: () => Observable<ResultType>;
+    executeAsPromiseBasedEventStream: () => EventSourceResponse<ContainerType<ResultType, any, any>>;
     toTaxiQl: () => string;
   };
+
+  type MethodsForTaxiQueryMethod<TQM extends TaxiQueryMethod, ResultType> = TQM extends 'find'
+    ? ExecutionMethods<ResultType>
+    : Pick<
+      ExecutionMethods<ResultType>,
+      'executeAsEventStream' | 'executeAsPromiseBasedEventStream' | 'toTaxiQl'
+    >;
+
+  // TODO The return type here should be Param extends [Container] ? Type[] : Type but that yields an unknown type
+  type ContainerType<Type, Container extends DatatypeContainer<Type>, Param extends FindParam<Type, Container>> =
+    Param extends [Container]
+      ? Param[0]['value'][]
+      : Param extends Container
+        ? Param['value']
+        : any
 
   function getDatatype(key: string): string {
     const container = key
@@ -99,9 +124,7 @@ export function buildClient<
       return '';
     }
     const givenBlock = Object.entries(criteriaParams)
-      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       .map(([key, value]) => [getDatatype(key), value!.value])
-      /* eslint-enable @typescript-eslint/no-non-null-assertion */
       .map(([key, value]) => {
         if (typeof value !== 'function') {
           return `\t${generateCriteriaString(key, { operator: '=', value })}`;
@@ -129,7 +152,7 @@ export function buildClient<
   }
 
   function generateQuery<T, M extends DatatypeContainer<T>>(
-    method: QueryMethod,
+    taxiQueryMethod: TaxiQueryMethod,
     givenParams: CriteriaParams | null,
     findParameter: FindParam<T, M>,
     asParameters: [string, DatatypeName][] | null
@@ -142,80 +165,71 @@ export function buildClient<
     const arrayNotifier = isArray(findParameter) ? `[]` : '';
     const asString =
       asParameters !== null ? `\n${asBlock}${arrayNotifier}` : '';
-    return `${given}${
-      method === 'query' ? 'find' : 'stream'
-    } { ${findBlock} }${asString}`;
+    return `${given}${taxiQueryMethod} { ${findBlock} }${asString}`;
   }
 
   function executeQuery<T, M extends DatatypeContainer<T>, ReturnType>(
-    method: QueryMethod,
+    taxiQueryMethod: TaxiQueryMethod,
+    transportMethod: TransportMethod,
     givenParams: CriteriaParams | null,
     findParameter: FindParam<T, M>,
     asParameters: [string, DatatypeName][] | null
   ) {
     const query = generateQuery(
-      method,
+      taxiQueryMethod,
       givenParams,
       findParameter,
       asParameters
     );
     actualOptions.logger.info(query);
-    return queryClient[method]<ReturnType>(query, generateRandomId());
+    return queryClient[transportMethod]<ReturnType>(query, generateRandomId());
   }
 
   function buildAs<T, M extends DatatypeContainer<T>>(
-    method: QueryMethod,
+    taxiQueryMethod: TaxiQueryMethod,
     givenParams: CriteriaParams | null,
     findParameter: FindParam<T, M>
   ) {
     return function as<Mapping extends DatatypeMapping>(
       asParams: AsParams<Mapping>
-    ): ReturnType<AsReturnType<Mapping>> {
+    ): ExecutionMethods<AsReturnType<Mapping>> {
       const asParameters = Object.entries(asParams).map(
         ([key, value]) => [key, getDatatype(value.name)] as [string, string]
       );
-      return {
-        execute: function execute() {
-          return executeQuery<T, M, AsReturnType<Mapping>>(
-            method,
-            givenParams,
-            findParameter,
-            asParameters
-          );
-        },
-        toTaxiQl: function toTaxiQl(): string {
-          return generateQuery(
-            method,
-            givenParams,
-            findParameter,
-            asParameters
-          );
-        },
-      };
+
+      const methods = buildExecutionMethods<T, M, AsReturnType<Mapping>>(
+        taxiQueryMethod,
+        givenParams,
+        findParameter,
+        asParameters
+      );
+
+      return methods;
     };
   }
 
-  function buildFind(method: QueryMethod, givenParams: CriteriaParams | null) {
+  function buildFind<TQM extends TaxiQueryMethod>(
+    taxiQueryMethod: TQM,
+    givenParams: CriteriaParams | null
+  ) {
     return function find<
       Type,
       Container extends DatatypeContainer<Type>,
       Param extends FindParam<Type, Container>
-    >(findParameter: Param) {
+    >(findParameter: Param): MethodsForTaxiQueryMethod<TQM, ContainerType<Type, Container, Param>> & {
+      as<Mapping extends DatatypeMapping>(
+        asParams: AsParams<Mapping>
+      ): MethodsForTaxiQueryMethod<TQM, AsReturnType<Mapping>>;
+    } {
+      const executionMethods = buildExecutionMethods<Type, Container, ContainerType<Type, Container, Param>>(
+        taxiQueryMethod,
+        givenParams,
+        findParameter
+      );
+
       return {
-        as: buildAs(method, givenParams, findParameter),
-        // TODO The return type here should be Param extends [Container] ? Type[] : Type but that yields an unknown type
-        execute: function execute(): Observable<
-          Param extends [Container]
-            ? Param[0]['value'][]
-            : Param extends Container
-            ? Param['value']
-            : any
-        > {
-          return executeQuery(method, givenParams, findParameter, null);
-        },
-        toTaxiQl: function toTaxiQl(): string {
-          return generateQuery(method, givenParams, findParameter, null);
-        },
+        as: buildAs<Type, Container>(taxiQueryMethod, givenParams, findParameter),
+        ...executionMethods,
       };
     };
   }
@@ -226,7 +240,7 @@ export function buildClient<
   ) {
     function nextOptions(criteriaParams: CriteriaParams) {
       return {
-        find: buildFind('query', criteriaParams),
+        find: buildFind('find', criteriaParams),
         stream: buildFind('stream', criteriaParams),
       };
     }
@@ -259,9 +273,63 @@ export function buildClient<
     };
   }
 
+  function buildExecutionMethods<T, M extends DatatypeContainer<T>, R>(
+    taxiQueryMethod: TaxiQueryMethod,
+    givenParams: CriteriaParams | null,
+    findParameter: FindParam<T, M>,
+    asParameters: [string, DatatypeName][] | null = null
+  ) {
+    return {
+      execute: (): Observable<R | { error: any }> => {
+        return executeQuery<T, M, R>(
+          taxiQueryMethod,
+          'query',
+          givenParams,
+          findParameter,
+          asParameters
+        ) as Observable<R | { error: any }>;
+      },
+      executeAsPromise: (): Promise<R | { error: any }> => {
+        return executeQuery<T, M, R>(
+          taxiQueryMethod,
+          'queryAsPromise',
+          givenParams,
+          findParameter,
+          asParameters
+        ) as Promise<R | { error: any }>;
+      },
+      executeAsEventStream: (): Observable<R> => {
+        return executeQuery<T, M, R>(
+          taxiQueryMethod,
+          'queryEventStream',
+          givenParams,
+          findParameter,
+          asParameters
+        ) as Observable<R>; // TODO: does this need the error prop?
+      },
+      executeAsPromiseBasedEventStream: (): EventSourceResponse<R> => {
+        return executeQuery<T, M, R>(
+          taxiQueryMethod,
+          'queryEventStreamAsPromise',
+          givenParams,
+          findParameter,
+          asParameters
+        ) as EventSourceResponse<R>;
+      },
+      toTaxiQl: (): string => {
+        return generateQuery(
+          taxiQueryMethod,
+          givenParams,
+          findParameter,
+          asParameters
+        );
+      },
+    };
+  }
+
   return {
     given,
-    find: buildFind('query', null),
+    find: buildFind('find', null),
     stream: buildFind('stream', null),
   };
 }
