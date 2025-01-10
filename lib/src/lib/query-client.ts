@@ -31,7 +31,7 @@ export class HttpQueryClient implements QueryClient {
         catchError((error) => {
           return error.response
             ? of({
-              error: error.message ? {message: error.message} : error.response.data,
+              error: error.response.data ? error.response.data : error.response,
               query,
             })
             : of({ error: 'UNKNOWN_ERROR' });
@@ -54,7 +54,7 @@ export class HttpQueryClient implements QueryClient {
       .catch((error) => {
         if (error.response) {
           return Promise.resolve({
-            error: error.message ? {message: error.message} : error.response.data,
+            error: error.response.data ? error.response.data : error.response,
             query,
           });
         }

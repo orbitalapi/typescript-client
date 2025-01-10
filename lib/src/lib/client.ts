@@ -162,7 +162,7 @@ export function buildClient<
     const findBlock = isArray(findParameter)
       ? `${findParameter[0].name}[]`
       : findParameter.name;
-    const arrayNotifier = isArray(findParameter) ? `[]` : '';
+    const arrayNotifier = isArray(findParameter) || taxiQueryMethod === 'stream' ? `[]` : '';
     const asString =
       asParameters !== null ? `\n${asBlock}${arrayNotifier}` : '';
     return `${given}${taxiQueryMethod} { ${findBlock} }${asString}`;
