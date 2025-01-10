@@ -168,7 +168,7 @@ export function buildClient<
     return `${given}${taxiQueryMethod} { ${findBlock} }${asString}`;
   }
 
-  function executeQuery<T, M extends DatatypeContainer<T>, ReturnType>(
+  function generateAndExecuteQuery<T, M extends DatatypeContainer<T>, ReturnType>(
     taxiQueryMethod: TaxiQueryMethod,
     transportMethod: TransportMethod,
     givenParams: CriteriaParams | null,
@@ -181,8 +181,15 @@ export function buildClient<
       findParameter,
       asParameters
     );
-    actualOptions.logger.info(query);
-    return queryClient[transportMethod]<ReturnType>(query, generateRandomId());
+    return executeQuery<ReturnType>(query, transportMethod)
+  }
+
+  function executeQuery<ReturnType>(
+    taxiQl: string,
+    transportMethod: TransportMethod,
+  ) {
+    actualOptions.logger.info(taxiQl);
+    return queryClient[transportMethod]<ReturnType>(taxiQl, generateRandomId());
   }
 
   function buildAs<T, M extends DatatypeContainer<T>>(
@@ -281,7 +288,7 @@ export function buildClient<
   ) {
     return {
       execute: (): Observable<R | { error: any }> => {
-        return executeQuery<T, M, R>(
+        return generateAndExecuteQuery<T, M, R>(
           taxiQueryMethod,
           'query',
           givenParams,
@@ -290,7 +297,7 @@ export function buildClient<
         ) as Observable<R | { error: any }>;
       },
       executeAsPromise: (): Promise<R | { error: any }> => {
-        return executeQuery<T, M, R>(
+        return generateAndExecuteQuery<T, M, R>(
           taxiQueryMethod,
           'queryAsPromise',
           givenParams,
@@ -299,7 +306,7 @@ export function buildClient<
         ) as Promise<R | { error: any }>;
       },
       executeAsEventStream: (): Observable<R> => {
-        return executeQuery<T, M, R>(
+        return generateAndExecuteQuery<T, M, R>(
           taxiQueryMethod,
           'queryEventStream',
           givenParams,
@@ -308,7 +315,7 @@ export function buildClient<
         ) as Observable<R>; // TODO: does this need the error prop?
       },
       executeAsPromiseBasedEventStream: (): EventSourceResponse<R> => {
-        return executeQuery<T, M, R>(
+        return generateAndExecuteQuery<T, M, R>(
           taxiQueryMethod,
           'queryEventStreamAsPromise',
           givenParams,
@@ -327,9 +334,42 @@ export function buildClient<
     };
   }
 
+  function taxiQl<R>(taxiQl: string) {
+    const executionMethods = {
+      execute: (): Observable<R | { error: any }> => {
+        return executeQuery<R>(
+          taxiQl,
+          'query',
+        ) as Observable<R | { error: any }>;
+      },
+      executeAsPromise: (): Promise<R | { error: any }> => {
+        return executeQuery<R>(
+          taxiQl,
+          'queryAsPromise',
+        ) as Promise<R | { error: any }>;
+      },
+      executeAsEventStream: (): Observable<R> => {
+        return executeQuery<R>(
+          taxiQl,
+          'queryEventStream',
+        ) as Observable<R>; // TODO: does this need the error prop?
+      },
+      executeAsPromiseBasedEventStream: (): EventSourceResponse<R> => {
+        return executeQuery<R>(
+          taxiQl,
+          'queryEventStreamAsPromise',
+        ) as EventSourceResponse<R>;
+      }
+    };
+    return {
+      ...executionMethods
+    }
+  }
+
   return {
     given,
     find: buildFind('find', null),
     stream: buildFind('stream', null),
+    taxiQl
   };
 }
