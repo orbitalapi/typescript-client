@@ -1,0 +1,4 @@
+namespace film.types {
+    [[ The description of the film ]]
+   type Description inherits String
+}

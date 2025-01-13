@@ -1,0 +1,17 @@
+namespace vyne.vyneQl { type VyneQlQuery inherits String }
+
+
+namespace  com.orbitalhq.kafka {
+   annotation KafkaService {
+      connectionName : ConnectionName inherits String
+   }
+   enum TopicOffset {
+      earliest,
+      latest,
+      none
+   }
+   annotation KafkaOperation {
+      topic : TopicName inherits String
+      offset : TopicOffset
+   }
+}
