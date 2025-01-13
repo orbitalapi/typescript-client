@@ -40,7 +40,6 @@
   "peerDependencies": {
     "axios": "^1.7.9",
     "nanoid": "^5.0.9",
-    "reflect-metadata": "^0.2.2",
     "rxjs": "^7.x"
   },
   "devDependencies": {
@@ -61,7 +60,6 @@
     "nyc": "^17.1.0",
     "open-cli": "^8.0.0",
     "prettier": "^3.4.2",
-    "reflect-metadata": "^0.2.2",
     "shx": "^0.3.4",
     "standard-version": "^9.5.0",
     "ts-node": "^10.9.2",

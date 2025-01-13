@@ -1,4 +1,3 @@
-import 'reflect-metadata'; // TODO Does this belong here or to the consumer code?
 import { nanoid } from 'nanoid';
 import {Observable, Subscription} from 'rxjs';
 
