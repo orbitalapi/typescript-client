@@ -1,11 +1,8 @@
 import { nanoid } from 'nanoid';
-import {Observable, Subscription} from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 // export for consumers of this library
-export {
-  Subscription
-}
-
+export { Subscription };
 
 import {
   ComposingCriteriaBuilder,
@@ -14,7 +11,7 @@ import {
   generateCriteriaString,
 } from './criteria';
 import { Logger, noopLogger } from './logger';
-import {EventSourceResponse, QueryClient} from './query-client';
+import { EventSourceResponse, QueryClient } from './query-client';
 
 function isArray(input: any): input is any[] {
   return Array.isArray(input);
@@ -23,7 +20,7 @@ function isArray(input: any): input is any[] {
 export type DatatypeName = string;
 
 export function asArray<Value>(
-  input: DatatypeContainer<Value>
+  input: DatatypeContainer<Value>,
 ): [DatatypeContainer<Value>] {
   return [input];
 }
@@ -60,12 +57,12 @@ type TaxiQueryMethod = 'find' | 'stream';
 
 export function buildClient<
   TaxonomyMapping extends DatatypeMapping,
-  Taxonomy extends TaxonomyType<TaxonomyMapping>
+  Taxonomy extends TaxonomyType<TaxonomyMapping>,
 >(taxonomy: Taxonomy, queryClient: QueryClient, options: ClientOptions = {}) {
   const actualOptions = { ...defaultOptions, ...options };
 
   type ComposingCriteriaBuilderFn<T extends AnyDatatypeContainer> = (
-    criteriaBuilder: ComposingCriteriaBuilder<T>
+    criteriaBuilder: ComposingCriteriaBuilder<T>,
   ) => CriteriaElement;
 
   type CriteriaElementContainer<T extends DatatypeContainer<any>> = {
@@ -89,31 +86,39 @@ export function buildClient<
     execute: () => Observable<ResultType | { error: any }>;
     executeAsPromise: () => Promise<ResultType | { error: any }>;
     executeAsEventStream: () => Observable<ResultType>;
-    executeAsPromiseBasedEventStream: () => EventSourceResponse<ContainerType<ResultType, any, any>>;
+    executeAsPromiseBasedEventStream: () => EventSourceResponse<
+      ContainerType<ResultType, any, any>
+    >;
     toTaxiQl: () => string;
   };
 
-  type MethodsForTaxiQueryMethod<TQM extends TaxiQueryMethod, ResultType> = TQM extends 'find'
+  type MethodsForTaxiQueryMethod<
+    TQM extends TaxiQueryMethod,
+    ResultType,
+  > = TQM extends 'find'
     ? ExecutionMethods<ResultType>
     : Pick<
-      ExecutionMethods<ResultType>,
-      'executeAsEventStream' | 'executeAsPromiseBasedEventStream' | 'toTaxiQl'
-    >;
+        ExecutionMethods<ResultType>,
+        'executeAsEventStream' | 'executeAsPromiseBasedEventStream' | 'toTaxiQl'
+      >;
 
   // TODO The return type here should be Param extends [Container] ? Type[] : Type but that yields an unknown type
-  type ContainerType<Type, Container extends DatatypeContainer<Type>, Param extends FindParam<Type, Container>> =
-    Param extends [Container]
-      ? Param[0]['value'][]
-      : Param extends Container
-        ? Param['value']
-        : any
+  type ContainerType<
+    Type,
+    Container extends DatatypeContainer<Type>,
+    Param extends FindParam<Type, Container>,
+  > = Param extends [Container]
+    ? Param[0]['value'][]
+    : Param extends Container
+      ? Param['value']
+      : any;
 
   function getDatatype(key: string): string {
     const container = key
       .split('.')
       .reduce(
         (obj, field) => obj[field] as any,
-        taxonomy
+        taxonomy,
       ) as unknown as DatatypeContainer<any>;
     return container.name;
   }
@@ -131,7 +136,7 @@ export function buildClient<
           const fn = value as ComposingCriteriaBuilderFn<any>;
           const criteriaString = generateCriteriaString(
             key,
-            fn(createCriteriaBuilder())
+            fn(createCriteriaBuilder()),
           );
           return `\t${criteriaString}`;
         }
@@ -154,33 +159,38 @@ export function buildClient<
     taxiQueryMethod: TaxiQueryMethod,
     givenParams: CriteriaParams | null,
     findParameter: FindParam<T, M>,
-    asParameters: [string, DatatypeName][] | null
+    asParameters: [string, DatatypeName][] | null,
   ): string {
     const given = generateGiven(givenParams);
     const asBlock = generateAs(asParameters);
     const findBlock = isArray(findParameter)
       ? `${findParameter[0].name}[]`
       : findParameter.name;
-    const arrayNotifier = isArray(findParameter) || taxiQueryMethod === 'stream' ? `[]` : '';
+    const arrayNotifier =
+      isArray(findParameter) || taxiQueryMethod === 'stream' ? `[]` : '';
     const asString =
       asParameters !== null ? `\n${asBlock}${arrayNotifier}` : '';
     return `${given}${taxiQueryMethod} { ${findBlock} }${asString}`;
   }
 
-  function generateAndExecuteQuery<T, M extends DatatypeContainer<T>, ReturnType>(
+  function generateAndExecuteQuery<
+    T,
+    M extends DatatypeContainer<T>,
+    ReturnType,
+  >(
     taxiQueryMethod: TaxiQueryMethod,
     transportMethod: TransportMethod,
     givenParams: CriteriaParams | null,
     findParameter: FindParam<T, M>,
-    asParameters: [string, DatatypeName][] | null
+    asParameters: [string, DatatypeName][] | null,
   ) {
     const query = generateQuery(
       taxiQueryMethod,
       givenParams,
       findParameter,
-      asParameters
+      asParameters,
     );
-    return executeQuery<ReturnType>(query, transportMethod)
+    return executeQuery<ReturnType>(query, transportMethod);
   }
 
   function executeQuery<ReturnType>(
@@ -194,20 +204,20 @@ export function buildClient<
   function buildAs<T, M extends DatatypeContainer<T>>(
     taxiQueryMethod: TaxiQueryMethod,
     givenParams: CriteriaParams | null,
-    findParameter: FindParam<T, M>
+    findParameter: FindParam<T, M>,
   ) {
     return function as<Mapping extends DatatypeMapping>(
-      asParams: AsParams<Mapping>
+      asParams: AsParams<Mapping>,
     ): ExecutionMethods<AsReturnType<Mapping>> {
       const asParameters = Object.entries(asParams).map(
-        ([key, value]) => [key, getDatatype(value.name)] as [string, string]
+        ([key, value]) => [key, getDatatype(value.name)] as [string, string],
       );
 
       const methods = buildExecutionMethods<T, M, AsReturnType<Mapping>>(
         taxiQueryMethod,
         givenParams,
         findParameter,
-        asParameters
+        asParameters,
       );
 
       return methods;
@@ -216,25 +226,31 @@ export function buildClient<
 
   function buildFind<TQM extends TaxiQueryMethod>(
     taxiQueryMethod: TQM,
-    givenParams: CriteriaParams | null
+    givenParams: CriteriaParams | null,
   ) {
     return function find<
       Type,
       Container extends DatatypeContainer<Type>,
-      Param extends FindParam<Type, Container>
-    >(findParameter: Param): MethodsForTaxiQueryMethod<TQM, ContainerType<Type, Container, Param>> & {
+      Param extends FindParam<Type, Container>,
+    >(
+      findParameter: Param,
+    ): MethodsForTaxiQueryMethod<TQM, ContainerType<Type, Container, Param>> & {
       as<Mapping extends DatatypeMapping>(
-        asParams: AsParams<Mapping>
+        asParams: AsParams<Mapping>,
       ): MethodsForTaxiQueryMethod<TQM, AsReturnType<Mapping>>;
     } {
-      const executionMethods = buildExecutionMethods<Type, Container, ContainerType<Type, Container, Param>>(
-        taxiQueryMethod,
-        givenParams,
-        findParameter
-      );
+      const executionMethods = buildExecutionMethods<
+        Type,
+        Container,
+        ContainerType<Type, Container, Param>
+      >(taxiQueryMethod, givenParams, findParameter);
 
       return {
-        as: buildAs<Type, Container>(taxiQueryMethod, givenParams, findParameter),
+        as: buildAs<Type, Container>(
+          taxiQueryMethod,
+          givenParams,
+          findParameter,
+        ),
         ...executionMethods,
       };
     };
@@ -242,7 +258,7 @@ export function buildClient<
 
   function given<K, T extends DatatypeContainer<K>>(
     type: T,
-    criteria: T['value'] | ComposingCriteriaBuilderFn<T>
+    criteria: T['value'] | ComposingCriteriaBuilderFn<T>,
   ) {
     function nextOptions(criteriaParams: CriteriaParams) {
       return {
@@ -254,7 +270,7 @@ export function buildClient<
     function buildAnd(params: CriteriaParams) {
       return function and<K, T extends DatatypeContainer<K>>(
         type: T,
-        criteria: T['value'] | ComposingCriteriaBuilderFn<T>
+        criteria: T['value'] | ComposingCriteriaBuilderFn<T>,
       ) {
         const newParams: CriteriaParams = {
           ...params,
@@ -283,7 +299,7 @@ export function buildClient<
     taxiQueryMethod: TaxiQueryMethod,
     givenParams: CriteriaParams | null,
     findParameter: FindParam<T, M>,
-    asParameters: [string, DatatypeName][] | null = null
+    asParameters: [string, DatatypeName][] | null = null,
   ) {
     return {
       execute: (): Observable<R | { error: any }> => {
@@ -292,7 +308,7 @@ export function buildClient<
           'query',
           givenParams,
           findParameter,
-          asParameters
+          asParameters,
         ) as Observable<R | { error: any }>;
       },
       executeAsPromise: (): Promise<R | { error: any }> => {
@@ -301,7 +317,7 @@ export function buildClient<
           'queryAsPromise',
           givenParams,
           findParameter,
-          asParameters
+          asParameters,
         ) as Promise<R | { error: any }>;
       },
       executeAsEventStream: (): Observable<R> => {
@@ -310,7 +326,7 @@ export function buildClient<
           'queryEventStream',
           givenParams,
           findParameter,
-          asParameters
+          asParameters,
         ) as Observable<R>; // TODO: does this need the error prop?
       },
       executeAsPromiseBasedEventStream: (): EventSourceResponse<R> => {
@@ -319,7 +335,7 @@ export function buildClient<
           'queryEventStreamAsPromise',
           givenParams,
           findParameter,
-          asParameters
+          asParameters,
         ) as EventSourceResponse<R>;
       },
       toTaxiQl: (): string => {
@@ -327,7 +343,7 @@ export function buildClient<
           taxiQueryMethod,
           givenParams,
           findParameter,
-          asParameters
+          asParameters,
         );
       },
     };
@@ -336,39 +352,34 @@ export function buildClient<
   function taxiQl<R>(taxiQl: string) {
     const executionMethods = {
       execute: (): Observable<R | { error: any }> => {
-        return executeQuery<R>(
-          taxiQl,
-          'query',
-        ) as Observable<R | { error: any }>;
+        return executeQuery<R>(taxiQl, 'query') as Observable<
+          R | { error: any }
+        >;
       },
       executeAsPromise: (): Promise<R | { error: any }> => {
-        return executeQuery<R>(
-          taxiQl,
-          'queryAsPromise',
-        ) as Promise<R | { error: any }>;
+        return executeQuery<R>(taxiQl, 'queryAsPromise') as Promise<
+          R | { error: any }
+        >;
       },
       executeAsEventStream: (): Observable<R> => {
-        return executeQuery<R>(
-          taxiQl,
-          'queryEventStream',
-        ) as Observable<R>; // TODO: does this need the error prop?
+        return executeQuery<R>(taxiQl, 'queryEventStream') as Observable<R>; // TODO: does this need the error prop?
       },
       executeAsPromiseBasedEventStream: (): EventSourceResponse<R> => {
         return executeQuery<R>(
           taxiQl,
           'queryEventStreamAsPromise',
         ) as EventSourceResponse<R>;
-      }
+      },
     };
     return {
-      ...executionMethods
-    }
+      ...executionMethods,
+    };
   }
 
   return {
     given,
     find: buildFind('find', null),
     stream: buildFind('stream', null),
-    taxiQl
+    taxiQl,
   };
 }

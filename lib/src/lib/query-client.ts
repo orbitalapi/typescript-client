@@ -9,7 +9,13 @@ export interface QueryClient {
   // TODO: rename queryAsEventStream
   queryEventStream<T>(query: string, clientQueryId: string): Observable<T>;
   // TODO: rename queryAsPromiseBasedEventStream
-  queryEventStreamAsPromise<T>(query: string, clientQueryId: string):  Promise<{[Symbol. asyncIterator](): AsyncGenerator<Awaited<T>, void, unknown>, close: () => void}>
+  queryEventStreamAsPromise<T>(
+    query: string,
+    clientQueryId: string,
+  ): Promise<{
+    [Symbol.asyncIterator](): AsyncGenerator<Awaited<T>, void, unknown>;
+    close: () => void;
+  }>;
 }
 
 export class HttpQueryClient implements QueryClient {
@@ -18,36 +24,43 @@ export class HttpQueryClient implements QueryClient {
   query<T>(query: string, clientQueryId?: string): Observable<T> {
     const clientId = clientQueryId || nanoid();
 
-    const request = axios.post(`${this.host}/api/taxiql?clientQueryId=${clientId}`, query, {
-      headers: {
-        'Content-Type': 'text/plain',
-        Accept: 'application/json',
+    const request = axios.post(
+      `${this.host}/api/taxiql?clientQueryId=${clientId}`,
+      query,
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+          Accept: 'application/json',
+        },
       },
-    });
+    );
 
-    return from(request)
-      .pipe(
-        map((response) => response.data),
-        catchError((error) => {
-          return error.response
-            ? of({
+    return from(request).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        return error.response
+          ? of({
               error: error.response.data ? error.response.data : error.response,
               query,
             })
-            : of({ error: 'UNKNOWN_ERROR' });
-        })
-      ) as Observable<T>;
+          : of({ error: 'UNKNOWN_ERROR' });
+      }),
+    ) as Observable<T>;
   }
 
   queryAsPromise<T>(query: string, clientQueryId?: string): Promise<T> {
     const clientId = clientQueryId || nanoid();
 
-    const request = axios.post(`${this.host}/api/taxiql?clientQueryId=${clientId}`, query, {
-      headers: {
-        'Content-Type': 'text/plain',
-        Accept: 'application/json',
+    const request = axios.post(
+      `${this.host}/api/taxiql?clientQueryId=${clientId}`,
+      query,
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+          Accept: 'application/json',
+        },
       },
-    });
+    );
 
     return request
       .then((response) => response.data as T)
@@ -76,8 +89,8 @@ export class HttpQueryClient implements QueryClient {
       const eventSource = new EventSource(url);
       let isOpen = false;
       eventSource.onopen = () => {
-        isOpen = true
-      }
+        isOpen = true;
+      };
       eventSource.onmessage = (event: MessageEvent) => {
         // Check for errors:
         const payload = JSON.parse(event.data) as T;
@@ -87,11 +100,13 @@ export class HttpQueryClient implements QueryClient {
         // if (messageReceived && errorAfterMessageIndicatesClosed) {
         // TODO: how do we actually handle error handling here (other than a connection error, which is already a hack)??
         if (!isOpen) {
-          observer.error('A connection error occurred')
+          observer.error('A connection error occurred');
         } else {
           // Note: We're now sending errors down as an error message, so
           // assume that all onerror signals are just completion.
-          console.log('Received error event  - treating this as a close signal');
+          console.log(
+            'Received error event  - treating this as a close signal',
+          );
           observer.complete();
         }
         // } else {
@@ -107,7 +122,10 @@ export class HttpQueryClient implements QueryClient {
     });
   }
 
-  queryEventStreamAsPromise<T>(query: string, clientQueryId?: string): EventSourceResponse<T> {
+  queryEventStreamAsPromise<T>(
+    query: string,
+    clientQueryId?: string,
+  ): EventSourceResponse<T> {
     const clientId = clientQueryId || nanoid();
     const url = `${
       this.host
@@ -142,7 +160,7 @@ export class HttpQueryClient implements QueryClient {
           rejectEventError = rej;
         });
       } catch (error) {
-        console.error("Failed to parse message", error);
+        console.error('Failed to parse message', error);
         rejectEventError(error);
       }
     };
@@ -150,8 +168,8 @@ export class HttpQueryClient implements QueryClient {
     eventSource.onerror = (event: Event) => {
       isErrored = true;
       if (isClosed === null) {
-        console.error("EventSource encountered an error:", event);
-        rejectEventError(new Error("A connection error occurred"));
+        console.error('EventSource encountered an error:', event);
+        rejectEventError(new Error('A connection error occurred'));
       } else {
         // Note: We're now sending errors down as an error message, so
         // assume that all onerror signals are just completion.
@@ -177,7 +195,7 @@ export class HttpQueryClient implements QueryClient {
           const nextValue = await eventAvailableSignal;
           if (nextValue === null) break;
         } catch (error) {
-          console.error("Error during event iteration:", error);
+          console.error('Error during event iteration:', error);
           throw error;
         }
       }
@@ -188,8 +206,6 @@ export class HttpQueryClient implements QueryClient {
       close,
     });
   }
-
-
 }
 
 export type EventSourceResponse<T> = Promise<{

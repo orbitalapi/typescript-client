@@ -26,13 +26,13 @@ type CriteriaPredicate =
   | MultiValueCriteriaPredicate;
 
 function isSingleValueCriteriaPredicate(
-  input: any
+  input: any,
 ): input is SingleValueCriteriaPredicate {
   return input.operator && input.value;
 }
 
 function isMultiValueCriteriaPredicate(
-  input: any
+  input: any,
 ): input is MultiValueCriteriaPredicate {
   return input.operator && input.values;
 }
@@ -45,7 +45,7 @@ export interface CriteriaComposition {
 }
 
 export interface ComposingCriteriaBuilder<
-  T extends DatatypeContainer<unknown>
+  T extends DatatypeContainer<unknown>,
 > {
   eq: (value: T['value']) => CriteriaPredicate;
   notEq: (value: T['value']) => CriteriaPredicate;
@@ -67,10 +67,13 @@ export type SimpleCriteriaBuilder<T extends DatatypeContainer<unknown>> = Omit<
 
 export function generateCriteriaString(
   datatype: string,
-  criteriaElement: CriteriaElement
+  criteriaElement: CriteriaElement,
 ): string {
   if (isSingleValueCriteriaPredicate(criteriaElement)) {
-    const criteriaValue = typeof criteriaElement.value === 'number' ? criteriaElement.value : `"${criteriaElement.value}"`
+    const criteriaValue =
+      typeof criteriaElement.value === 'number'
+        ? criteriaElement.value
+        : `"${criteriaElement.value}"`;
     return `${datatype} ${criteriaElement.operator} ${criteriaValue}`;
   } else if (isMultiValueCriteriaPredicate(criteriaElement)) {
     return `${datatype} ${
