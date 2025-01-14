@@ -1,5 +1,7 @@
 import { asArray, buildClient, consoleLogger, HttpQueryClient } from '@orbitalhq/orbital-client';
 import { taxonomy } from './taxonomy';
+import {EventSource} from 'eventsource'; // Nodejs doesn't have native EventSource implementation
+global.EventSource = EventSource;
 
 const client = buildClient<{}, typeof taxonomy>(
   taxonomy,
@@ -10,83 +12,78 @@ const client = buildClient<{}, typeof taxonomy>(
 );
 
 
-/**
- * namespace animals {
- *   type Name inherits String
- * }
- * namespace people {
- *  type FirstName inherits String
- *  type LastName inherits String
- * }
- */
-
-console.log('\n\nJust find');
+console.log('Just find')
 client
-  .find(taxonomy.people.Person)
+  .find(asArray(taxonomy.film.Film))
   .execute()
-  .subscribe((result) => console.log(result.firstName));
+  .subscribe(results => console.log(results))
 
-console.log('\n\nJust find with an array');
-client
-  .find(asArray(taxonomy.people.Person))
-  .execute()
-  .subscribe((result) => console.log(result[0].firstName));
 
-console.log('\n\nGiven and find');
+console.log('\n\nGiven, with find and projection:\n');
 client
-  .given(taxonomy.people.FirstName, 'John')
-  .find(taxonomy.people.Person)
-  .execute()
-  .subscribe((result) => console.log(result.firstName));
-
-console.log('\n\nGiven, find and as');
-client
-  .given(taxonomy.people.FirstName, 'John')
-  .find(taxonomy.people.Person)
+  .given(taxonomy.films.FilmId, 5)
+  .find(asArray(taxonomy.film.Film))
   .as({
-    firstName: taxonomy.people.FirstName,
-    personAge: taxonomy.people.LastName,
-  }).execute()
-  .subscribe((result) => console.log(result.firstName));
+    reviewScore: taxonomy.films.reviews.FilmReviewScore,
+    streamingProvider: taxonomy.io.vyne.films.StreamingProvider,
+  })
+  .execute()
+  .subscribe(results => console.log(results));
+
+/*console.log('\n\nCriteria builder:\n');
+client
+  .given(taxonomy.films.FilmId, 5)
+  .and(taxonomy.film.Title, (cb) => cb.eq('ACADEMY DINOSAUR'))
+  .find(asArray(taxonomy.film.Film))
+  .execute()
+  .subscribe(results => console.log(results));*/
+
+console.log('\n\Find with projected results discovered by API calls:\n');
+client
+  .find(asArray(taxonomy.film.Film))
+  .as({
+    name: taxonomy.film.Title,
+    id: taxonomy.films.FilmId,
+    description: taxonomy.film.Description,
+    platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
+    price: taxonomy.io.vyne.films.providers.PricerPerMonth,
+    rating: taxonomy.films.reviews.FilmReviewScore,
+    review: taxonomy.films.reviews.ReviewText,
+  })
+  .execute()
+  .subscribe(results => console.log(results));
 
 console.log('\n\nJust stream');
 client
-  .stream(taxonomy.people.Person)
-  .execute()
-  .subscribe((result) => console.log(result.firstName));
+  .stream(taxonomy.demo.netflix.NewFilmReleaseAnnouncement)
+  .executeAsEventStream()
+  .subscribe(results => console.log(results))
 
-console.log('\n\nGiven and stream');
+console.log('\n\nStream with projected results discovered by API calls:\n');
 client
-  .given(taxonomy.people.FirstName, 'John')
-  .stream(taxonomy.people.Person)
-  .execute()
-  .subscribe((result) => console.log(result.firstName));
-
-console.log('\n\nGiven, stream and as');
-client
-  .given(taxonomy.people.FirstName, 'John')
-  .stream(asArray(taxonomy.people.Person))
+  .stream(taxonomy.demo.netflix.NewFilmReleaseAnnouncement)
   .as({
-    firstName: taxonomy.people.FirstName,
-    personAge: taxonomy.people.Age,
-    address: taxonomy.people.Age,
-  }).execute()
-  .subscribe((result) => console.log(result.address));
+    announcement: taxonomy.demo.netflix.NewFilmReleaseAnnouncement,
+    name: taxonomy.film.Title,
+    id : taxonomy.films.FilmId,
+    description: taxonomy.film.Description,
+    platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
+    price: taxonomy.io.vyne.films.providers.PricerPerMonth,
+    rating: taxonomy.films.reviews.FilmReviewScore,
+    review: taxonomy.films.reviews.ReviewText,
+  })
+  .executeAsEventStream()
+  .subscribe(results => console.log(results))
 
-console.log('\n\nCriteria builder');
-client
-  .given(taxonomy.people.FirstName, 'John')
-  .and(taxonomy.people.LastName, (cb) => cb.eq('Doe'))
-  .find(asArray(taxonomy.people.Person))
-  .execute()
-  .subscribe((result) => console.log(result[0].firstName));
-
-
-console.log('\n\nTaxiQL generation');
+console.log('\n\nTaxiQL generation:\n');
 console.log(
   client
-    .given(taxonomy.people.FirstName, 'John')
-    .find(asArray(taxonomy.people.Person))
+    .given(taxonomy.films.FilmId, 5)
+    .find(asArray(taxonomy.film.Film))
+    .as({
+      reviewScore: taxonomy.films.reviews.FilmReviewScore,
+      streamingProvider: taxonomy.io.vyne.films.StreamingProvider,
+    })
     .toTaxiQl(),
 );
 

@@ -13,10 +13,11 @@
   "license": "MIT",
   "dependencies": {
     "@orbitalhq/orbital-client": "file:../../lib",
-    "reflect-metadata": "^0.2.2",
+    "eventsource": "^3.0.2",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
+    "@types/node": "^22.10.6",
     "tsx": "^4.19.2"
   }
 }
