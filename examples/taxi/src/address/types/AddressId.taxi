@@ -1,3 +1,0 @@
-namespace address.types {
-   type AddressId inherits Int
-}

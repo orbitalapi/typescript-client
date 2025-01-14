@@ -42,10 +42,18 @@ npm install
 Nebula provides the required test containers, including the database, APIs, and Kafka broker. To start Nebula, navigate to the examples/taxi folder and then run:
 
 ```bash
-docker-compose up -d
+cd ../../examples/taxi/
+docker compose up -d
 ```
 
-Ensure the Nebula environment is running before proceeding.
+> [!WARNING]
+> Trap for linux users - there's a line in the docker compose that has to be commented out
+>```
+>## Remove or comment out these lines if running on Linux
+>##     - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+>```
+
+Ensure the Nebula environment is running before proceeding (it will be shown by running `docker ps` or will appear in Docker Desktop). 
 
 ### Step 4: Start the React Application
 

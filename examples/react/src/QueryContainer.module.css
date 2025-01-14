@@ -39,15 +39,25 @@
   }
 
   .taxiCode {
-    tab-size: 4;
-    font-family: monospace;
-    font-size: 1rem;
     background: rgba(255,255,255, 0.1);
     padding: 1rem;
     border-radius: 0.5rem;
     border: 1px dashed #888;
-    word-break: break-all;
-    white-space: break-spaces;
+
+    legend {
+      font-weight: bold;
+      padding: 0 0.35rem;
+      margin-left: -4px;
+      margin-bottom: -2px;
+    }
+
+    .taxiCodeContent {
+      tab-size: 4;
+      font-family: monospace;
+      font-size: 1rem;
+      word-break: break-all;
+      white-space: break-spaces;
+    }
   }
 
   .readme {

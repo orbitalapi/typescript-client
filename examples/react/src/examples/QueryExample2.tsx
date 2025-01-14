@@ -15,6 +15,13 @@ as {
   reviewScore : films.reviews.FilmReviewScore
   streamingProvider : io.vyne.films.providers.StreamingProviderName
 }`,
+  sdkCode: `client
+  .given(taxonomy.films.FilmId, 5)
+  .find(asArray(taxonomy.film.Film))
+  .as({
+    reviewScore: taxonomy.films.reviews.FilmReviewScore,
+    streamingProvider: taxonomy.io.vyne.films.StreamingProvider,
+  })`,
   useQuery: true,
   usePromise: true,
   useEventStream: true,

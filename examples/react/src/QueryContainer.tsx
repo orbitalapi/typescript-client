@@ -15,12 +15,22 @@ export const QueryContainer = ({...props}: QueriesContainerProps) => {
   return (
     <div className={classes.queriesContainer}>
       <div className={classes.query}>
-        <div className={classes.taxiCode}>{props.queryInfo.query}</div>
+        <fieldset className={classes.taxiCode}>
+          <legend>SDK Code</legend>
+          <div className={classes.taxiCodeContent}>{props.queryInfo.sdkCode}</div>
+        </fieldset>
+        <fieldset className={classes.taxiCode}>
+          <legend>Generates the following TaxiQL</legend>
+          <div className={classes.taxiCodeContent}>{props.queryInfo.query}</div>
+        </fieldset>
         <div className={classes.buttonContainer}>
           {props.queryInfo.useQuery && <ExecuteQuery label="Execute query" onClick={() => props.executeQuery?.()}/>}
-          {props.queryInfo.usePromise && <ExecuteQuery label="Execute query as Promise" onClick={() => props.executeQueryAsPromise?.()}/>}
-          {props.queryInfo.useEventStream && <ExecuteQuery label="Execute query as Event Stream" onClick={() => props.streamQuery?.()}/>}
-          {props.queryInfo.useEventStreamAsPromise && <ExecuteQuery label="Execute query as Promise based Event Stream" onClick={() => props.streamQueryAsPromise?.()}/>}
+          {props.queryInfo.usePromise &&
+            <ExecuteQuery label="Execute query as Promise" onClick={() => props.executeQueryAsPromise?.()}/>}
+          {props.queryInfo.useEventStream &&
+            <ExecuteQuery label="Execute query as Event Stream" onClick={() => props.streamQuery?.()}/>}
+          {props.queryInfo.useEventStreamAsPromise && <ExecuteQuery label="Execute query as Promise based Event Stream"
+                                                                    onClick={() => props.streamQueryAsPromise?.()}/>}
         </div>
         <Markdown className={classes.readme}>{props.queryInfo.readme}</Markdown>
       </div>

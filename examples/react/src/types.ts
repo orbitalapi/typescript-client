@@ -9,9 +9,10 @@ export type QueryError = {
 
 export type QueryInfo = {
   query: string
+  sdkCode: string
   useQuery: boolean
   usePromise: boolean
   useEventStream: boolean
   useEventStreamAsPromise: boolean
-  readme?: string // specifically, markdown to be rendered
+  readme: string // specifically, markdown to be rendered
 }

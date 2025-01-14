@@ -1,8 +1,5 @@
 namespace demo.netflix
 
-type NetflixFilmId inherits Int
-type NetflixAnnouncement inherits String
-
 //@lang.taxi.formats.ProtobufMessage(packageName = "" , messageName = "NewFilmReleaseAnnouncement")
 model NewFilmReleaseAnnouncement {
    //@lang.taxi.formats.ProtobufField(tag = 1 , protoType = "int32")

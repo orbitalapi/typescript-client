@@ -332,15 +332,6 @@ export namespace com.orbitalhq.caching {
   }
 }
 
-export namespace address.types {
-  export type AddressIdType = number;
-  export type AddressId = DatatypeContainer<AddressIdType>;
-
-  export class Taxonomy {
-    readonly AddressId: AddressId = buildDatatypeContainer('address.types.AddressId', 0);
-  }
-}
-
 export namespace demo.netflix {
   export type NetflixFilmIdType = number;
   export type NetflixFilmId = DatatypeContainer<NetflixFilmIdType>;
@@ -369,59 +360,6 @@ export namespace demo.netflix {
 }
 
 export namespace film {
-  // This is a film
-  export type Film = DatatypeContainer<{
-    readonly film_id: films.FilmIdType;
-
-    readonly title: film.types.TitleType;
-
-    // What a film marketing person has described this film as. In space, no one hears you scream.
-    readonly description?: film.types.DescriptionType;
-
-    readonly release_year?: film.types.ReleaseYearType;
-
-    readonly language_id: language.types.LanguageIdType;
-
-    readonly original_language_id?: language.types.OriginalLanguageIdType;
-
-    readonly rental_duration: film.types.RentalDurationType;
-
-    readonly rental_rate: film.types.RentalRateType;
-
-    readonly length?: film.types.LengthType;
-
-    readonly replacement_cost: film.types.ReplacementCostType;
-
-    readonly rating?: film.types.RatingType;
-
-    readonly last_update: film.types.LastUpdateType;
-
-    readonly special_features?: film.types.SpecialFeatures[];
-
-    readonly fulltext: film.types.FulltextType;
-  }>;
-
-  export class Taxonomy {
-    readonly Film: Film = buildDatatypeContainer('film.Film', {
-      film_id: 0,
-      title: '',
-      description: '',
-      release_year: 0,
-      language_id: 0,
-      original_language_id: 0,
-      rental_duration: 0,
-      rental_rate: 0.0,
-      length: 0,
-      replacement_cost: 0.0,
-      rating: '',
-      last_update: new Date(),
-      special_features: [],
-      fulltext: '',
-    });
-  }
-}
-
-export namespace film.types {
   // The description of the film
   export type DescriptionType = string;
   export type Description = DatatypeContainer<DescriptionType>;
@@ -446,28 +384,66 @@ export namespace film.types {
   // The title of the film
   export type TitleType = string;
   export type Title = DatatypeContainer<TitleType>;
+  // This is a film
+  export type Film = DatatypeContainer<{
+    readonly film_id: films.FilmIdType;
+
+    readonly title: film.TitleType;
+
+    // What a film marketing person has described this film as. In space, no one hears you scream.
+    readonly description?: film.DescriptionType;
+
+    readonly release_year?: film.ReleaseYearType;
+
+    readonly language_id: language.LanguageIdType;
+
+    readonly original_language_id?: language.OriginalLanguageIdType;
+
+    readonly rental_duration: film.RentalDurationType;
+
+    readonly rental_rate: film.RentalRateType;
+
+    readonly length?: film.LengthType;
+
+    readonly replacement_cost: film.ReplacementCostType;
+
+    readonly rating?: film.RatingType;
+
+    readonly last_update: film.LastUpdateType;
+
+    readonly special_features?: film.SpecialFeatures[];
+
+    readonly fulltext: film.FulltextType;
+  }>;
 
   export class Taxonomy {
-    readonly Description: Description = buildDatatypeContainer('film.types.Description', '');
-    readonly Fulltext: Fulltext = buildDatatypeContainer('film.types.Fulltext', '');
-    readonly LastUpdate: LastUpdate = buildDatatypeContainer('film.types.LastUpdate', new Date());
-    readonly Length: Length = buildDatatypeContainer('film.types.Length', 0);
-    readonly Rating: Rating = buildDatatypeContainer('film.types.Rating', '');
-    readonly ReleaseYear: ReleaseYear = buildDatatypeContainer('film.types.ReleaseYear', 0);
-    readonly RentalDuration: RentalDuration = buildDatatypeContainer(
-      'film.types.RentalDuration',
-      0
-    );
-    readonly RentalRate: RentalRate = buildDatatypeContainer('film.types.RentalRate', 0.0);
-    readonly ReplacementCost: ReplacementCost = buildDatatypeContainer(
-      'film.types.ReplacementCost',
-      0.0
-    );
-    readonly SpecialFeatures: SpecialFeatures = buildDatatypeContainer(
-      'film.types.SpecialFeatures',
-      ''
-    );
-    readonly Title: Title = buildDatatypeContainer('film.types.Title', '');
+    readonly Description: Description = buildDatatypeContainer('film.Description', '');
+    readonly Fulltext: Fulltext = buildDatatypeContainer('film.Fulltext', '');
+    readonly LastUpdate: LastUpdate = buildDatatypeContainer('film.LastUpdate', new Date());
+    readonly Length: Length = buildDatatypeContainer('film.Length', 0);
+    readonly Rating: Rating = buildDatatypeContainer('film.Rating', '');
+    readonly ReleaseYear: ReleaseYear = buildDatatypeContainer('film.ReleaseYear', 0);
+    readonly RentalDuration: RentalDuration = buildDatatypeContainer('film.RentalDuration', 0);
+    readonly RentalRate: RentalRate = buildDatatypeContainer('film.RentalRate', 0.0);
+    readonly ReplacementCost: ReplacementCost = buildDatatypeContainer('film.ReplacementCost', 0.0);
+    readonly SpecialFeatures: SpecialFeatures = buildDatatypeContainer('film.SpecialFeatures', '');
+    readonly Title: Title = buildDatatypeContainer('film.Title', '');
+    readonly Film: Film = buildDatatypeContainer('film.Film', {
+      film_id: 0,
+      title: '',
+      description: '',
+      release_year: 0,
+      language_id: 0,
+      original_language_id: 0,
+      rental_duration: 0,
+      rental_rate: 0.0,
+      length: 0,
+      replacement_cost: 0.0,
+      rating: '',
+      last_update: new Date(),
+      special_features: [],
+      fulltext: '',
+    });
   }
 }
 
@@ -500,9 +476,9 @@ export namespace io.vyne.films.providers {
 
 export namespace io.vyne.films {
   export type StreamingProvider = DatatypeContainer<{
-    readonly name?: io.vyne.films.providers.StreamingProviderNameType;
+    readonly name: io.vyne.films.providers.StreamingProviderNameType;
 
-    readonly pricePerMonth?: io.vyne.films.providers.PricerPerMonthType;
+    readonly pricePerMonth: io.vyne.films.providers.PricerPerMonthType;
   }>;
 
   export class Taxonomy {
@@ -516,16 +492,16 @@ export namespace io.vyne.films {
   }
 }
 
-export namespace language.types {
+export namespace language {
   export type LanguageIdType = number;
   export type LanguageId = DatatypeContainer<LanguageIdType>;
   export type OriginalLanguageIdType = number;
   export type OriginalLanguageId = DatatypeContainer<OriginalLanguageIdType>;
 
   export class Taxonomy {
-    readonly LanguageId: LanguageId = buildDatatypeContainer('language.types.LanguageId', 0);
+    readonly LanguageId: LanguageId = buildDatatypeContainer('language.LanguageId', 0);
     readonly OriginalLanguageId: OriginalLanguageId = buildDatatypeContainer(
-      'language.types.OriginalLanguageId',
+      'language.OriginalLanguageId',
       0
     );
   }
@@ -575,15 +551,6 @@ export namespace films.reviews {
       netflixId: 0,
       squashedTomatoesFilmId: '',
     });
-  }
-}
-
-export namespace staff.types {
-  export type StaffIdType = number;
-  export type StaffId = DatatypeContainer<StaffIdType>;
-
-  export class Taxonomy {
-    readonly StaffId: StaffId = buildDatatypeContainer('staff.types.StaffId', 0);
   }
 }
 export const taxonomy = {
@@ -669,20 +636,12 @@ export const taxonomy = {
       },
     },
   },
-  address: {
-    types: {
-      ...new address.types.Taxonomy(),
-    },
-  },
   demo: {
     netflix: {
       ...new demo.netflix.Taxonomy(),
     },
   },
   film: {
-    types: {
-      ...new film.types.Taxonomy(),
-    },
     ...new film.Taxonomy(),
   },
   films: {
@@ -702,13 +661,6 @@ export const taxonomy = {
     },
   },
   language: {
-    types: {
-      ...new language.types.Taxonomy(),
-    },
-  },
-  staff: {
-    types: {
-      ...new staff.types.Taxonomy(),
-    },
+    ...new language.Taxonomy(),
   },
 };

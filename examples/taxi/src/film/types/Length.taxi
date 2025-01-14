@@ -1,3 +1,0 @@
-namespace film.types {
-   type Length inherits Int
-}

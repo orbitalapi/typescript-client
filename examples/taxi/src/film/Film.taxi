@@ -1,33 +1,33 @@
-import film.types.Title
-import film.types.Description
-import film.types.ReleaseYear
-import language.types.LanguageId
-import film.types.RentalDuration
-import film.types.RentalRate
-import film.types.Length
-import film.types.ReplacementCost
-import film.types.Rating
-import film.types.LastUpdate
-import film.types.Fulltext
-import film.types.SpecialFeatures
+import film.Title
+import film.Description
+import film.ReleaseYear
+import language.LanguageId
+import film.RentalDuration
+import film.RentalRate
+import film.Length
+import film.ReplacementCost
+import film.Rating
+import film.LastUpdate
+import film.Fulltext
+import film.SpecialFeatures
 namespace film {
    [[ This is a film ]]
    @com.orbitalhq.jdbc.Table( connection = "films", schema = "public" , table = "film")
    model Film {
       @Id film_id : films.FilmId
-      title : film.types.Title
+      title : film.Title
       [[ What a film marketing person has described this film as. In space, no one hears you scream. ]]
-      description : film.types.Description?
-      release_year : film.types.ReleaseYear?
-      language_id : language.types.LanguageId
-      original_language_id : language.types.OriginalLanguageId?
-      rental_duration : film.types.RentalDuration
-      rental_rate : film.types.RentalRate
-      length : film.types.Length?
-      replacement_cost : film.types.ReplacementCost
-      rating : film.types.Rating?
-      last_update : film.types.LastUpdate
-      special_features : film.types.SpecialFeatures[]?
-      fulltext : film.types.Fulltext
+      description : film.Description?
+      release_year : film.ReleaseYear?
+      language_id : language.LanguageId
+      original_language_id : language.OriginalLanguageId?
+      rental_duration : film.RentalDuration
+      rental_rate : film.RentalRate
+      length : film.Length?
+      replacement_cost : film.ReplacementCost
+      rating : film.Rating?
+      last_update : film.LastUpdate
+      special_features : film.SpecialFeatures[]?
+      fulltext : film.Fulltext
    }
 }

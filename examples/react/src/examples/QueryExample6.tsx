@@ -5,12 +5,17 @@ import {useQueryState} from '../useQueryState.ts';
 import markdown from '../markdown/QueryExample6.md?raw'
 
 const queryExample1: QueryInfo = {
-  query: `// This is manually input taxiql (view QueryExample6.tsx)
-find { Film[] } as {
+  query: `find { Film[] } as {
    filmId: films.FilmId
    fieldNameThatIsReallyLooooooong: ReviewText
    duration: RentalDuration
  }[]`,
+  sdkCode: `client
+  .taxiQl("find { Film[] } as {
+    filmId: films.FilmId
+    fieldNameThatIsReallyLooooooong: ReviewText
+    duration: RentalDuration
+  }[]")`,
   useQuery: true,
   usePromise: false,
   useEventStream: false,

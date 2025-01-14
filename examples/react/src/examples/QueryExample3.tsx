@@ -8,16 +8,27 @@ import markdown from '../markdown/QueryExample3.md?raw'
 
 const queryExample1: QueryInfo = {
   query: `find { Film[] } as {
-  name: Title
-  id : FilmId
-  description: Description
+  name: film.Title
+  id : films.FilmId
+  description: film.Description
   // Where can I watch this?
-  platformName: StreamingProviderName
-  price: PricerPerMonth
+  platformName: io.vyne.films.providers.StreamingProviderName
+  price: io.vyne.films.providers.PricerPerMonth
   // Grab some reviews
-  rating: FilmReviewScore
-  review: ReviewText    
+  rating: films.reviews.FilmReviewScore
+  review: films.reviews.ReviewText    
 }[]`,
+  sdkCode: `client
+  .find(asArray(taxonomy.film.Film))
+  .as({
+    name: taxonomy.film.Title,
+    id: taxonomy.films.FilmId,
+    description: taxonomy.film.Description,
+    platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
+    price: taxonomy.io.vyne.films.providers.PricerPerMonth,
+    rating: taxonomy.films.reviews.FilmReviewScore,
+    review: taxonomy.films.reviews.ReviewText,
+  })`,
   useQuery: true,
   usePromise: true,
   useEventStream: true,
@@ -47,9 +58,9 @@ export const QueryExample3 = () => {
     client
       .find(asArray(taxonomy.film.Film))
       .as({
-        name: taxonomy.film.types.Title,
+        name: taxonomy.film.Title,
         id: taxonomy.films.FilmId,
-        description: taxonomy.film.types.Description,
+        description: taxonomy.film.Description,
         platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
         price: taxonomy.io.vyne.films.providers.PricerPerMonth,
         rating: taxonomy.films.reviews.FilmReviewScore,
@@ -71,9 +82,9 @@ export const QueryExample3 = () => {
     const result = await client
       .find(asArray(taxonomy.film.Film))
       .as({
-        name: taxonomy.film.types.Title,
+        name: taxonomy.film.Title,
         id: taxonomy.films.FilmId,
-        description: taxonomy.film.types.Description,
+        description: taxonomy.film.Description,
         platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
         price: taxonomy.io.vyne.films.providers.PricerPerMonth,
         rating: taxonomy.films.reviews.FilmReviewScore,
@@ -93,9 +104,9 @@ export const QueryExample3 = () => {
     setStreamSubscription(client
       .find(asArray(taxonomy.film.Film))
       .as({
-        name: taxonomy.film.types.Title,
+        name: taxonomy.film.Title,
         id: taxonomy.films.FilmId,
-        description: taxonomy.film.types.Description,
+        description: taxonomy.film.Description,
         platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
         price: taxonomy.io.vyne.films.providers.PricerPerMonth,
         rating: taxonomy.films.reviews.FilmReviewScore,
@@ -124,9 +135,9 @@ export const QueryExample3 = () => {
       const stream = await client
         .find(asArray(taxonomy.film.Film))
         .as({
-          name: taxonomy.film.types.Title,
+          name: taxonomy.film.Title,
           id: taxonomy.films.FilmId,
-          description: taxonomy.film.types.Description,
+          description: taxonomy.film.Description,
           platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
           price: taxonomy.io.vyne.films.providers.PricerPerMonth,
           rating: taxonomy.films.reviews.FilmReviewScore,

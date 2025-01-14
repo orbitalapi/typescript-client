@@ -1,3 +1,0 @@
-namespace staff.types {
-   type StaffId inherits Int
-}

@@ -5,7 +5,6 @@ import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.nio.file.Paths
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 
 /*
@@ -132,11 +131,10 @@ stack {
    }
 
    kafka {
-      val counter = AtomicInteger(0)
-      producer("5s".duration(), "releases") {
+      producer("1s".duration(), "releases") {
          jsonMessage {
             mapOf(
-               "filmId" to counter.incrementAndGet(),
+               "filmId" to Random.nextInt(0, 1000),
                "announcement" to "Today, Netflix announced the reboot of yet another classic franchise"
             )
          }

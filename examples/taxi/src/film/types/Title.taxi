@@ -1,4 +1,0 @@
-namespace film.types {
-[[ The title of the film ]]
-   type Title inherits String
-}

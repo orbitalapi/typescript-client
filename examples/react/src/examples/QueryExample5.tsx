@@ -16,6 +16,19 @@ const queryExample1: QueryInfo = {
   rating: FilmReviewScore
   review: ReviewText
 }[]`,
+  sdkCode: `client
+  .stream(taxonomy.demo.netflix.NewFilmReleaseAnnouncement)
+  .as({
+    announcement: taxonomy.demo.netflix.NewFilmReleaseAnnouncement,
+    name: taxonomy.film.Title,
+    id : taxonomy.films.FilmId,
+    description: taxonomy.film.Description,
+    platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
+    price: taxonomy.io.vyne.films.providers.PricerPerMonth,
+    rating: taxonomy.films.reviews.FilmReviewScore,
+    review: taxonomy.films.reviews.ReviewText,
+  })
+  `,
   useQuery: false,
   usePromise: false,
   useEventStream: true,
@@ -47,9 +60,9 @@ export const QueryExample5 = () => {
       .stream(taxonomy.demo.netflix.NewFilmReleaseAnnouncement)
       .as({
         announcement: taxonomy.demo.netflix.NewFilmReleaseAnnouncement,
-        name: taxonomy.film.types.Title,
+        name: taxonomy.film.Title,
         id : taxonomy.films.FilmId,
-        description: taxonomy.film.types.Description,
+        description: taxonomy.film.Description,
         platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
         price: taxonomy.io.vyne.films.providers.PricerPerMonth,
         rating: taxonomy.films.reviews.FilmReviewScore,
@@ -79,9 +92,9 @@ export const QueryExample5 = () => {
         .stream(taxonomy.demo.netflix.NewFilmReleaseAnnouncement)
         .as({
           announcement: taxonomy.demo.netflix.NewFilmReleaseAnnouncement,
-          name: taxonomy.film.types.Title,
+          name: taxonomy.film.Title,
           id : taxonomy.films.FilmId,
-          description: taxonomy.film.types.Description,
+          description: taxonomy.film.Description,
           platformName: taxonomy.io.vyne.films.providers.StreamingProviderName,
           price: taxonomy.io.vyne.films.providers.PricerPerMonth,
           rating: taxonomy.films.reviews.FilmReviewScore,

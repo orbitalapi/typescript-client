@@ -8,6 +8,8 @@ import markdown from '../markdown/QueryExample1.md?raw'
 
 const queryExample1: QueryInfo = {
   query: `find { film.Film[] }`,
+  sdkCode: `client
+  .find(asArray(taxonomy.film.Film))`,
   useQuery: true,
   usePromise: true,
   useEventStream: true,
