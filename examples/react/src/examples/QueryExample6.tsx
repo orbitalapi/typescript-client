@@ -16,10 +16,6 @@ const queryExample1: QueryInfo = {
     fieldNameThatIsReallyLooooooong: ReviewText
     duration: RentalDuration
   }[]")`,
-  useQuery: true,
-  usePromise: false,
-  useEventStream: false,
-  useEventStreamAsPromise: false,
   readme: markdown
 }
 
@@ -33,7 +29,9 @@ export const QueryExample6 = () => {
     error,
     setError,
     streamSubscription,
+    setStreamSubscription,
     stream,
+    setStream,
     resetState,
     closeStream,
   } = useQueryState();
@@ -57,12 +55,78 @@ export const QueryExample6 = () => {
       })
   }
 
+  const executeQueryAsPromise = async () => {
+    resetState()
+    const result = await client
+      .taxiQl("find { Film[] } as {\n" +
+        "     filmId: films.FilmId\n" +
+        "     fieldNameThatIsReallyLooooooong: ReviewText\n" +
+        "     duration: RentalDuration\n" +
+        "   }[]")
+      .executeAsPromise()
+    setLoading(false)
+    if ('error' in result) {
+      setError((result.error as QueryError).message)
+    } else {
+      setItems(result)
+    }
+  }
+
+  const streamQuery = () => {
+    resetState()
+    setStreamSubscription(client
+      .taxiQl("find { Film[] } as {\n" +
+        "     filmId: films.FilmId\n" +
+        "     fieldNameThatIsReallyLooooooong: ReviewText\n" +
+        "     duration: RentalDuration\n" +
+        "   }[]")
+      .executeAsEventStream()
+      .subscribe({
+        next: (result) => {
+          if ('error' in result) {
+            setError((result.error as QueryError).message)
+          } else {
+            setItems((prevItems) => [result, ...prevItems]);
+          }
+        },
+        error: (error) => {
+          setError(error)
+          setLoading(false)
+        },
+        complete: () => setLoading(false),
+      }))
+  }
+
+  const streamQueryAsPromise = async () => {
+    resetState()
+    try {
+      const stream = await client
+        .taxiQl("find { Film[] } as {\n" +
+          "     filmId: films.FilmId\n" +
+          "     fieldNameThatIsReallyLooooooong: ReviewText\n" +
+          "     duration: RentalDuration\n" +
+          "   }[]")
+        .executeAsPromiseBasedEventStream()
+      setStream({close: stream.close})
+      for await (const result of stream) {
+        setItems((prevItems) => [result, ...prevItems]);
+      }
+      setLoading(false)
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      console.log('stream closed')
+    }
+  }
 
   return (
     <>
       <QueryContainer
         queryInfo={queryExample1}
         executeQuery={executeQuery}
+        executeQueryAsPromise={executeQueryAsPromise}
+        streamQuery={streamQuery}
+        streamQueryAsPromise={streamQueryAsPromise}
       />
       <ResultsContainer
         items={items}

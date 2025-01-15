@@ -24,12 +24,12 @@ export const QueryContainer = ({...props}: QueriesContainerProps) => {
           <div className={classes.taxiCodeContent}>{props.queryInfo.query}</div>
         </fieldset>
         <div className={classes.buttonContainer}>
-          {props.queryInfo.useQuery && <ExecuteQuery label="Execute query" onClick={() => props.executeQuery?.()}/>}
-          {props.queryInfo.usePromise &&
+          {props.executeQuery && <ExecuteQuery label="Execute query" onClick={() => props.executeQuery?.()}/>}
+          {props.executeQueryAsPromise &&
             <ExecuteQuery label="Execute query as Promise" onClick={() => props.executeQueryAsPromise?.()}/>}
-          {props.queryInfo.useEventStream &&
+          {props.streamQuery &&
             <ExecuteQuery label="Execute query as Event Stream" onClick={() => props.streamQuery?.()}/>}
-          {props.queryInfo.useEventStreamAsPromise && <ExecuteQuery label="Execute query as Promise based Event Stream"
+          {props.streamQueryAsPromise && <ExecuteQuery label="Execute query as Promise based Event Stream"
                                                                     onClick={() => props.streamQueryAsPromise?.()}/>}
         </div>
         <Markdown className={classes.readme}>{props.queryInfo.readme}</Markdown>

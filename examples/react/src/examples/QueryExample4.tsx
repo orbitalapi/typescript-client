@@ -9,10 +9,6 @@ const queryExample1: QueryInfo = {
   query: `stream { demo.netflix.NewFilmReleaseAnnouncement }`,
   sdkCode: `client
   .stream(taxonomy.demo.netflix.NewFilmReleaseAnnouncement)`,
-  useQuery: false,
-  usePromise: false,
-  useEventStream: true,
-  useEventStreamAsPromise: true,
   readme: markdown
 }
 

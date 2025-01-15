@@ -10,10 +10,6 @@ const queryExample1: QueryInfo = {
   query: `find { film.Film[] }`,
   sdkCode: `client
   .find(asArray(taxonomy.film.Film))`,
-  useQuery: true,
-  usePromise: true,
-  useEventStream: true,
-  useEventStreamAsPromise: true,
   readme: markdown
 }
 

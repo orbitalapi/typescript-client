@@ -22,10 +22,6 @@ as {
     reviewScore: taxonomy.films.reviews.FilmReviewScore,
     streamingProvider: taxonomy.io.vyne.films.StreamingProvider,
   })`,
-  useQuery: true,
-  usePromise: true,
-  useEventStream: true,
-  useEventStreamAsPromise: true,
   readme: markdown
 }
 

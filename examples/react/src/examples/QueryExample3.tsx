@@ -29,10 +29,6 @@ const queryExample1: QueryInfo = {
     rating: taxonomy.films.reviews.FilmReviewScore,
     review: taxonomy.films.reviews.ReviewText,
   })`,
-  useQuery: true,
-  usePromise: true,
-  useEventStream: true,
-  useEventStreamAsPromise: true,
   readme: markdown
 }
 
